@@ -95,10 +95,10 @@ output_height , output_width = 736 , 1280
 #     ax.set_title("original image {}".format(img_is.shape[:2]))
 #
 #     ax = fig.add_subplot(1,4,3)
-#     ax.imshow(cv2.resize(seg_img,(input_height , input_width)))
+#     ax.imshow(cv2.resize(seg_img,(input_height , input_width),interpolation=0))
 #
 #     ax = fig.add_subplot(1,4,4)
-#     ax.imshow(cv2.resize(img_is,(output_height , output_width))/255.0)
+#     ax.imshow(cv2.resize(img_is,(output_height , output_width),interpolation=0)/255.0)
 #     ax.set_title("resized to {}".format((output_height , output_width)))
 #     plt.show()
 
@@ -106,14 +106,14 @@ output_height , output_width = 736 , 1280
 def getImageArr( path , width , height ):
     img = cv2.imread(path, 1)
     # ??????????
-    img = np.float32(cv2.resize(img, ( width , height ))) / 127.5 - 1
+    img = np.float32(cv2.resize(img, ( width , height ),interpolation=0)) / 127.5 - 1
     return img
 
 def getSegmentationArr( path , nClasses ,  width , height  ):
 
     seg_labels = np.zeros((  height , width  , nClasses ))
     img = cv2.imread(path, 1)
-    img = cv2.resize(img, ( width , height ))
+    img = cv2.resize(img, ( width , height ),interpolation=0)
     img = img[:, : , 0]
 
     for c in range(nClasses):
