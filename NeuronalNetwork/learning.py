@@ -3,10 +3,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import cv2 as cv2
+import tensorflow as tf
+
+
 
 dir_data = "Images/"
 dir_seg = dir_data + "/Labels/"
 dir_img = dir_data + "/Original/"
+
 
 
 ## seaborn has white grid by default so I will get rid of this.
@@ -71,8 +75,8 @@ def give_color_to_seg_img(seg,n_classes):
 
     return(seg_img)
 
-input_height , input_width = 224 , 224
-output_height , output_width = 224 , 224
+input_height , input_width = 736 , 1280
+output_height , output_width = 736 , 1280
 
 
 # ldseg = np.array(os.listdir(dir_seg))
@@ -101,6 +105,7 @@ output_height , output_width = 224 , 224
 
 def getImageArr( path , width , height ):
     img = cv2.imread(path, 1)
+    # ??????????
     img = np.float32(cv2.resize(img, ( width , height ))) / 127.5 - 1
     return img
 
@@ -139,7 +144,6 @@ print(X.shape,Y.shape)
 
 
 # Import usual libraries
-import tensorflow as tf
 from keras.backend.tensorflow_backend import set_session
 import keras, sys, time, warnings
 from keras.models import *
@@ -150,7 +154,7 @@ warnings.filterwarnings("ignore")
 # os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 config = tf.ConfigProto()
 config.gpu_options.per_process_gpu_memory_fraction = 0.95
-config.gpu_options.visible_device_list = "2"
+config.gpu_options.visible_device_list = "0"
 set_session(tf.Session(config=config))
 
 print("python {}".format(sys.version))
@@ -159,9 +163,9 @@ print("tensorflow version {}".format(tf.__version__))
 
 
 ## location of VGG weights
-VGG_Weights_path = "./vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5"
+#VGG_Weights_path = "./vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5"
 
-def FCN8( nClasses ,  input_height=224, input_width=224):
+def FCN8( nClasses ,  input_height=736, input_width=1280):
     ## input_height and width must be devisible by 32 because maxpooling with filter size = (2,2) is operated 5 times,
     ## which makes the input_height and width 2^5 = 32 times smaller
     assert input_height%32 == 0
@@ -216,7 +220,7 @@ def FCN8( nClasses ,  input_height=224, input_width=224):
 
 
     vgg  = Model(  img_input , pool5  )
-    vgg.load_weights(VGG_Weights_path) ## loading VGG weights for the encoder parts of FCN8
+    #vgg.load_weights(VGG_Weights_path) ## loading VGG weights for the encoder parts of FCN8
 
     n = 4096
     o = ( Conv2D( n , ( 7 , 7 ) , activation='relu' , padding='same', name="conv6", data_format=IMAGE_ORDERING))(pool5)
@@ -241,8 +245,8 @@ def FCN8( nClasses ,  input_height=224, input_width=224):
     return model
 
 model = FCN8(nClasses     = n_classes,
-             input_height = 224,
-             input_width  = 224)
+             input_height = 736,
+             input_width  = 1280)
 model.summary()
 
 
@@ -269,7 +273,7 @@ model.compile(loss='categorical_crossentropy',
 
 hist1 = model.fit(X_train,y_train,
                   validation_data=(X_test,y_test),
-                  batch_size=32,epochs=200,verbose=2)
+                  batch_size=32,epochs=3,verbose=2)
 
 
 
@@ -277,7 +281,7 @@ y_pred = model.predict(X_test)
 y_predi = np.argmax(y_pred, axis=3)
 y_testi = np.argmax(y_test, axis=3)
 print(y_testi.shape,y_predi.shape)
-
+model.save_weights('my_model_weights.h5')
 
 def IoU(Yi,y_predi):
     ## mean Intersection over Union
@@ -300,24 +304,24 @@ IoU(y_testi,y_predi)
 
 
 
-shape = (224,224)
-n_classes= 10
+shape = (736,1280)
+#n_classes= 10
 
-for i in range(10):
-    img_is  = (X_test[i] + 1)*(255.0/2)
-    seg = y_predi[i]
-    segtest = y_testi[i]
-
-    fig = plt.figure(figsize=(10,30))
-    ax = fig.add_subplot(1,3,1)
-    ax.imshow(img_is/255.0)
-    ax.set_title("original")
-
-    ax = fig.add_subplot(1,3,2)
-    ax.imshow(give_color_to_seg_img(seg,n_classes))
-    ax.set_title("predicted class")
-
-    ax = fig.add_subplot(1,3,3)
-    ax.imshow(give_color_to_seg_img(segtest,n_classes))
-    ax.set_title("true class")
-    plt.show()
+# for i in range(10):
+#     img_is  = (X_test[i] + 1)*(255.0/2)
+#     seg = y_predi[i]
+#     segtest = y_testi[i]
+#
+#     fig = plt.figure(figsize=(10,30))
+#     ax = fig.add_subplot(1,3,1)
+#     ax.imshow(img_is/255.0)
+#     ax.set_title("original")
+#
+#     ax = fig.add_subplot(1,3,2)
+#     ax.imshow(give_color_to_seg_img(seg,n_classes))
+#     ax.set_title("predicted class")
+#
+#     ax = fig.add_subplot(1,3,3)
+#     ax.imshow(give_color_to_seg_img(segtest,n_classes))
+#     ax.set_title("true class")
+#     plt.show()
