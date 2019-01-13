@@ -1,9 +1,14 @@
 function p = getPuncturePoint(im)
+
 load('trainedSVM.mat');
+% load('trainedSVM2.mat');
 
 % im = imread('data/img2_70.jpg') ;
 % im = imread('testImgs/cam2/dart_20.png') ;
 %  im = im2single(im) ;
+
+%Testbild Links
+%im = imread('data/l_value_15_frame_19.jpg') ;
 
 % Compute detections
 [detections, scores] = detect(im, w, hogCellSize, scales) ;

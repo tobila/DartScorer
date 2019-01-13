@@ -5,8 +5,8 @@ cap1 = cv2.VideoCapture(1)
 cap2 = cv2.VideoCapture(2)
 frame_width = int(cap1.get(3))
 frame_height = int(cap2.get(4))
-out1 = cv2.VideoWriter('out1.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 5, (frame_width,frame_height))
-out2 = cv2.VideoWriter('out2.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 5, (frame_width,frame_height))
+out1 = cv2.VideoWriter('2out1_130119.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 5, (frame_width,frame_height))
+out2 = cv2.VideoWriter('2out2_130119.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 5, (frame_width,frame_height))
 
 while(True):
     # Capture frame-by-frame
