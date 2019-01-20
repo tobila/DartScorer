@@ -1,7 +1,10 @@
-function p = getPuncturePoint(im)
+function p = getPuncturePoint(im, camPosition)
 
-load('trainedSVM.mat');
-% load('trainedSVM2.mat');
+if camPosition=="right"
+    load('trainedSVM.mat');
+else
+    load('trainedSVM2.mat');
+end
 
 % im = imread('data/img2_70.jpg') ;
 % im = imread('testImgs/cam2/dart_20.png') ;
@@ -20,13 +23,17 @@ cX = (detections(1,1) + detections(3,1))/2;
 cY = (detections(2,1) + detections(4,1))/2;
 
 % Plot top detection
-figure(3) ; clf ;
+if camPosition=="right"
+    figure(2) ; clf ;
+else
+    figure(3) ; clf ;
+end
 imagesc(im) ; axis equal ;
 hold on ;
 vl_plotbox(detections, 'g', 'linewidth', 2, ...
   'label', arrayfun(@(x)sprintf('%.2f',x),scores,'uniformoutput',0)) ;
 title('Multiple detections') ;
 plot(cX, cY, 'r*', 'LineWidth', 2, 'MarkerSize', 5);
-% 
+
 p = [cX cY];
 end

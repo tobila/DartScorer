@@ -1,11 +1,12 @@
-load('trainedSVM.mat')
-
+load('trainedSVM2.mat')
+setup;
 % -------------------------------------------------------------------------
 % Step 5.3: Evaluate the model on the test data
 % -------------------------------------------------------------------------
 
 %im = imread('data/myTestImage.jpg') ;
-im = imread('data/img2_70.jpg') ;
+%im = imread('data/img2_70.jpg') ;
+im = imread('../TestImages/left/l_value_15_frame_19.jpg');
 im = im2single(im) ;
 
 % Compute detections
